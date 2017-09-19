@@ -1,0 +1,31 @@
+apply plugin: 'java'
+apply plugin: 'application'
+
+mainClassName = 'pref.New'
+
+// tag::repositories[]
+repositories { 
+    mavenCentral() 
+}
+// end::repositories[]
+
+// tag::jar[]
+jar {
+    baseName = 'pref-reasoner'
+    version =  '0.1.0'
+}
+// end::jar[]
+
+// tag::dependencies[]
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+dependencies {
+    compile 'net.sourceforge.owlapi:owlapi-distribution:5.0.0'
+    compile 'net.sourceforge.owlapi:org.semanticweb.hermit:1.3.8.500'
+    compile 'org.slf4j:slf4j-simple:1.7.25'
+}
+// end::dependencies[]
+
+// tag::wrapper[]
+// end::wrapper[]
