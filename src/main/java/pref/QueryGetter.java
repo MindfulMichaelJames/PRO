@@ -9,7 +9,8 @@ import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.obolibrary.macro.ManchesterSyntaxTool;
 
 
-public class AxiomAdder implements ActionListener{  
+public class QueryGetter implements ActionListener{
+    Util u;  
     JTextField tfLHS, tfRHS;  
     JButton bAdd, bCancel;
     JLabel lLHS, lSCO, lRHS;
@@ -48,7 +49,7 @@ public class AxiomAdder implements ActionListener{
 
         lRHS = new JLabel("Class Expression");  
     
-        bAdd = new JButton("Add Axiom");  
+        bAdd = new JButton("Query");  
   
         bCancel = new JButton("Cancel");  
 
@@ -84,17 +85,27 @@ public class AxiomAdder implements ActionListener{
     public void actionPerformed(ActionEvent e) {  
         String lhs=tfLHS.getText();  
         String rhs=tfRHS.getText();
+
         // String newAx = lhs + " SubClassOf " + rhs;
         if(e.getSource()==bAdd){  
-            manager.addAxiom(o, df.getOWLSubClassOfAxiom(parser.parseManchesterExpression(lhs), parser.parseManchesterExpression(rhs))); 
+            Boolean entailed = u.performRationalClosure(df.getOWLSubClassOfAxiom(parser.parseManchesterExpression(lhs), parser.parseManchesterExpression(rhs)));
+            if (entailed){
+                System.out.println("In rational closure");
+                JOptionPane.showMessageDialog(null, "In rational closure", "Result", JOptionPane.INFORMATION_MESSAGE);
+            } 
+            else {
+                System.out.println("Not in rational closure");
+                JOptionPane.showMessageDialog(null, "Not in rational closure", "Result", JOptionPane.INFORMATION_MESSAGE);
+            }
         }else if(e.getSource()==bCancel){  
             f.dispose();  
         }  
     } 
 
-    public AxiomAdder(OWLOntology ontology){
+    public QueryGetter(OWLOntology ontology){
         parser = new ManchesterSyntaxTool(ontology);
         o = ontology;
+        u = new Util(o);
         prepGUI();
         showAdder();
     }
@@ -102,9 +113,4 @@ public class AxiomAdder implements ActionListener{
     private void showAdder(){
         f.setVisible(true);
     }
-
-    // public static void main(String[] args) {
-    //     AxiomAdder testAdd = new AxiomAdder();
-    //     testAdd.showAdder();s
-    // }
-} 
+}

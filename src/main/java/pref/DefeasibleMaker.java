@@ -19,6 +19,7 @@ public class DefeasibleMaker {
         JFrame frame =  new JFrame();
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
+        JButton bCancel;
 
         for (OWLSubClassOfAxiom axiom : axioms) {
 
@@ -73,6 +74,7 @@ public class DefeasibleMaker {
                 frame.dispose();
             }
         });
+
 
         frame.add(mainPanel);
         frame.pack();

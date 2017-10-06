@@ -41,6 +41,7 @@ import org.semanticweb.owlapi.model.OWLSubClassOfAxiomShortCut;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
 import org.semanticweb.owlapi.model.OWLOntologyStorageException;
+import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import java.io.File;
 import java.util.*;
 import java.util.ArrayList;
@@ -64,12 +65,12 @@ public class PRO {
 	private static OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 	private static OWLDataFactory df = manager.getOWLDataFactory();
 	private static OWLAnnotationProperty userRank = df.getOWLAnnotationProperty(IRI.create("#userRank"));
-	static OWLOntology ontology;
-	static Util u;
+	OWLOntology ontology;
+	Util u;
 
 	public static void main(String[] args) throws Exception {
 
-		ontology = manager.loadOntologyFromOntologyDocument(new File((String)JOptionPane.showInputDialog(frame, "Ontology file name: ", "PRO", JOptionPane.PLAIN_MESSAGE)));
+		// ontology = manager.loadOntologyFromOntologyDocument(new File((String)JOptionPane.showInputDialog(frame, "Ontology file name: ", "PRO", JOptionPane.PLAIN_MESSAGE)));
 		//menu load or create ontology
 
 		//add classes and objectproperties and axioms
@@ -79,15 +80,16 @@ public class PRO {
 		// 	ontology = ontLoader.getOnt();
 		// }
 
-		if (!(ontology == null)){
-			u = new Util(ontology);
-			functionMenu();
-		}
+		// if (!(ontology == null)){
+		// 	u = new Util(ontology);
+		// 	functionMenu();
+		// }
 		
-		
+		PRO pro = new PRO();
+        pro.runTool();
 
 
-		System.out.println(ontology);
+		// System.out.println(ontology);
 
 
 
@@ -97,8 +99,34 @@ public class PRO {
 	// 	OntLoader ontLoader = new OntLoader();
 	// 	return ontLoader.getOnt();
 	// }
+	// public OWLOntology loadOntology(){
+	// 	OntLoader ontLoader = new OntLoader();
+	// 	return ontLoader.getOnt();
+	// }
 
-	public static void functionMenu(){
+	public void runTool(){
+		try 
+            {
+                ontology = manager.loadOntologyFromOntologyDocument(new File("Test2.owl"));
+            } 
+            catch(OWLOntologyCreationException error)
+            {
+                 System.out.println(error);
+            }
+        System.out.println(manager.getOntologyFormat(ontology));
+		u = new Util(ontology);
+		functionMenu();
+	}
+
+	public void functionMenu(){
+		
+
+		// ontology = ontLoader.getOnt();
+
+		// ontology = manager.loadOntologyFromOntologyDocument(new File((String)JOptionPane.showInputDialog(frame, "Ontology file name: ", "PRO", JOptionPane.PLAIN_MESSAGE)));
+
+		// u = new Util(ontology);
+
 		frame =  new JFrame();
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
@@ -110,9 +138,11 @@ public class PRO {
         JButton editRanking = new JButton("Change ranking");
         JButton queryButton = new JButton("Query");
 
+        // u = new Util(ontology);
+
         classButton.addActionListener(new ActionListener() {
 	    	public void actionPerformed(ActionEvent e) {
-		        manager.addAxiom(ontology, u.newClass());
+		        u.newClass();
 		        try 
 		        {
 		            manager.saveOntology(ontology);
@@ -138,7 +168,7 @@ public class PRO {
 		});
 		newAxiom.addActionListener(new ActionListener() {
 	    	public void actionPerformed(ActionEvent e) {
-		        AxiomAdder axAd = new AxiomAdder();
+		        AxiomAdder axAd = new AxiomAdder(ontology);
 		        try 
 		        {
 		            manager.saveOntology(ontology);
@@ -152,8 +182,8 @@ public class PRO {
 		denoteDefeasible.addActionListener(new ActionListener() {
 	    	public void actionPerformed(ActionEvent e) {
 		        u = new Util(ontology);
-		        DefeasibleMaker dM = new DefeasibleMaker(ontology, u.getDefeasibleAxioms(u.getAllAxioms()));
-		        System.out.println(ontology);
+		        DefeasibleMaker dM = new DefeasibleMaker(ontology, u.getAllAxioms());
+		        // System.out.println(ontology);
 		        try 
 		        {
 		            manager.saveOntology(ontology);
@@ -167,7 +197,7 @@ public class PRO {
 		editRanking.addActionListener(new ActionListener() {
 	    	public void actionPerformed(ActionEvent e) {
 		        DefeasibleRanker dR = new DefeasibleRanker(ontology, u.getDefeasibleAxioms(u.getAllAxioms()));
-		        System.out.println(ontology);
+		        // System.out.println(ontology);
 		    	try 
 		        {
 		            manager.saveOntology(ontology);
@@ -180,15 +210,15 @@ public class PRO {
 		});
 		queryButton.addActionListener(new ActionListener() {
 	    	public void actionPerformed(ActionEvent e) {
-		        DefeasibleRanker dR = new DefeasibleRanker(ontology, u.getDefeasibleAxioms(u.getAllAxioms()));
-		    	try 
-		        {
-		            manager.saveOntology(ontology);
-		        } 
-		        catch(OWLOntologyStorageException error)
-		        {
-		             System.out.println(error);
-		        };
+		        QueryGetter qG = new QueryGetter(ontology);
+		    	// try 
+		     //    {
+		     //        manager.saveOntology(ontology);
+		     //    } 
+		     //    catch(OWLOntologyStorageException error)
+		     //    {
+		     //         System.out.println(error);
+		     //    };
 		    }
 		});
 

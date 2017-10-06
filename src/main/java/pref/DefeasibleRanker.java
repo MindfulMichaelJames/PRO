@@ -23,6 +23,7 @@ public class DefeasibleRanker {
     ActionListener decAction;
     Set<OWLSubClassOfAxiom> axioms;
     OWLOntology ontology;
+    JButton bCancel;
 
     public DefeasibleRanker(OWLOntology inOntology, Set<OWLSubClassOfAxiom> inAxioms) {
     	ontology = inOntology;
@@ -112,6 +113,14 @@ public class DefeasibleRanker {
 
             	rowSection.add(rowItem);
 
+            	bCancel = new JButton("Cancel");
+
+            	bCancel.addActionListener(new ActionListener() {
+			    	public void actionPerformed(ActionEvent e) {
+			    		frame.dispose();
+			    	}
+			    });
+
             	incEx.addActionListener(new ActionListener() {
 			    	public void actionPerformed(ActionEvent e) {
 				        int level = u.getRank(axiom);
@@ -120,10 +129,10 @@ public class DefeasibleRanker {
 				        OWLSubClassOfAxiom newAx = u.assignRank(axiom, upLevel);
 						rankAxioms.get(level).remove(axiom);
 
+						System.out.println(u.getRank(newAx));
+
 						manager.removeAxiom(ontology, axiom);
 						manager.addAxiom(ontology, newAx);
-
-						System.out.println(u.getRank(axiom));
 
 						Set<OWLSubClassOfAxiom> newRank = rankAxioms.get(upLevel);
 			 			if (newRank == null){
@@ -144,7 +153,9 @@ public class DefeasibleRanker {
 			    	public void actionPerformed(ActionEvent e) {
 				        int level = u.getRank(axiom);
 				        int downLevel = level - 1;
-				        u.assignRank(axiom, downLevel);
+				        OWLSubClassOfAxiom newAx = u.assignRank(axiom, downLevel);
+				        manager.removeAxiom(ontology, axiom);
+						manager.addAxiom(ontology, newAx);
 						rankAxioms.get(level).remove(axiom);
 						rankAxioms.get(downLevel).add(axiom);
 						mainPanel.removeAll();

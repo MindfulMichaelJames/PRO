@@ -98,25 +98,29 @@ public class Util {
 		// return axiom.getAnnotatedAxiom(DEFAULTANNOTATIONS);
 	}
 
-	public OWLSubClassOfAxiom makeStrict(OWLSubClassOfAxiom axiom){
+	public void makeStrict(OWLSubClassOfAxiom axiom){
 		Set<OWLAnnotation> strictAnnotations = new HashSet<>();
 		strictAnnotations.add(strictAnnotation);
-		return axiom.getAnnotatedAxiom(strictAnnotations);
+		manager.removeAxiom(ontology, axiom);
+		OWLSubClassOfAxiom outax = axiom.getAxiomWithoutAnnotations();
+		manager.addAxiom(ontology, outax.getAnnotatedAxiom(strictAnnotations));
 	}
 
 	public OWLSubClassOfAxiom assignRank(OWLSubClassOfAxiom axiom, int rankInt){
 		Set<OWLAnnotation> rankAnnotation = new HashSet<>();
+		rankAnnotation.add(defeasibleAnnotation);
 		rankAnnotation.add(df.getOWLAnnotation(rankAnnotationProperty, df.getOWLLiteral(rankInt)));
-		return axiom.getAnnotatedAxiom(rankAnnotation);
+		OWLSubClassOfAxiom outax = axiom.getAxiomWithoutAnnotations();
+		return outax.getAnnotatedAxiom(rankAnnotation);
+		// manager.removeAxiom(ontology, axiom);
+		// manager.addAxiom(ontology, axiom.getAnnotatedAxiom(rankAnnotation));
 	}
 
-	public Set<OWLSubClassOfAxiom> assignRank(Set<OWLSubClassOfAxiom> axioms, int rankInt){
-		for (OWLSubClassOfAxiom axiom : axioms){
-			axioms.remove(axiom);
-			axioms.add(assignRank(axiom, rankInt));
-		}
-		return axioms;
-	}
+	// public void assignRank(Set<OWLSubClassOfAxiom> axioms, int rankInt){
+	// 	for (OWLSubClassOfAxiom axiom : axioms){
+	// 		assignRank(axiom, rankInt);
+	// 	}
+	// }
 
 	public OWLClassExpression getQueryPart(){
 		String input = (String)JOptionPane.showInputDialog(frame, "Enter a query: ", "PRO", JOptionPane.PLAIN_MESSAGE);
@@ -126,18 +130,17 @@ public class Util {
 
 	public void newObjectProperty(){
 		// IRI ontIRI = ontology.getOntologyID().getOntologyIRI().get();
-		String input = (String)JOptionPane.showInputDialog(frame, "Enter a new object property: ", "PRO", JOptionPane.PLAIN_MESSAGE);
+		String input = "#" + (String)JOptionPane.showInputDialog(frame, "Enter a new object property: ", "PRO", JOptionPane.PLAIN_MESSAGE);
 		OWLObjectProperty opToAdd =  df.getOWLObjectProperty(IRI.create(input));
 		OWLDeclarationAxiom daxiomop = df.getOWLDeclarationAxiom(opToAdd);
 		manager.addAxiom(ontology, daxiomop);
 	}
 
-	public OWLDeclarationAxiom newClass(){
+	public void newClass(){
 		// IRI ontIRI = ontology.getOntologyID().getOntologyIRI().get();
-		String input = (String)JOptionPane.showInputDialog(frame, "Enter a new class name: ", "PRO", JOptionPane.PLAIN_MESSAGE);
+		String input = "#" + (String)JOptionPane.showInputDialog(frame, "Enter a new class name: ", "PRO", JOptionPane.PLAIN_MESSAGE);
 		OWLClass classToAdd = df.getOWLClass(IRI.create(input));
-		return df.getOWLDeclarationAxiom(classToAdd);
-		
+		manager.addAxiom(ontology, df.getOWLDeclarationAxiom(classToAdd));
 	}
 
 	public Set<OWLSubClassOfAxiom> getAllAxioms(){
@@ -177,7 +180,8 @@ public class Util {
 		return df.getOWLObjectUnionOf(df.getOWLObjectComplementOf(axiom.getSubClass()), axiom.getSuperClass());
 	}
 
-	public TreeMap<Integer, OWLClassExpression> getInternalisations(Set<OWLSubClassOfAxiom> inAxioms){
+	public TreeMap<Integer, OWLClassExpression> getInternalisations(){
+		Set<OWLSubClassOfAxiom> inAxioms = getDefeasibleAxioms(getAllAxioms());
  		TreeMap<Integer, Set<OWLClassExpression>> rankAxioms = new TreeMap<>();
 
  		for (OWLSubClassOfAxiom axiom : inAxioms){
@@ -208,7 +212,8 @@ public class Util {
 		return df.getOWLSubClassOfAxiom(df.getOWLObjectIntersectionOf(internalisation, query.getSubClass()), query.getSuperClass());
 	}
 
-	public OWLOntology getTBox(Set<OWLSubClassOfAxiom> axioms){
+	public OWLOntology getTBox(){
+		Set<OWLSubClassOfAxiom> axioms = getAllAxioms();
 		try {
 			OWLOntology TBox = manager.createOntology();
 			for (OWLSubClassOfAxiom axiom : axioms){
@@ -226,7 +231,10 @@ public class Util {
 		
 	}
 
-	public boolean performRationalClosure(OWLOntology TBox, Map<Integer, OWLClassExpression> internalisations, OWLSubClassOfAxiom query){
+	public boolean performRationalClosure(OWLSubClassOfAxiom query){
+		OWLOntology TBox = getTBox();
+		Map<Integer, OWLClassExpression> internalisations = getInternalisations();
+
 		OWLReasoner reasoner = new Reasoner.ReasonerFactory().createReasoner(TBox);
 		int ranks = internalisations.size();
 		for (int rank = 0; rank < ranks; rank++){
