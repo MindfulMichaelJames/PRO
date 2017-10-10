@@ -7,13 +7,16 @@ import java.io.StringWriter;
 import java.util.*;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
+import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.manchestersyntax.renderer.ManchesterOWLSyntaxObjectRenderer;
 import org.semanticweb.owlapi.manchestersyntax.renderer.ManchesterOWLSyntaxPrefixNameShortFormProvider;
+import org.semanticweb.owlapi.model.OWLOntologyStorageException;
+import org.semanticweb.owlapi.model.OWLOntologyID;
 
 public class DefeasibleRanker {
-    private static OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+    private OWLOntologyManager manager;
     Util u;
     JFrame frame;
     JPanel mainPanel;
@@ -25,13 +28,16 @@ public class DefeasibleRanker {
     OWLOntology ontology;
     JButton bCancel;
 
-    public DefeasibleRanker(OWLOntology inOntology, Set<OWLSubClassOfAxiom> inAxioms) {
-    	ontology = inOntology;
-    	u = new Util(ontology);
+    public DefeasibleRanker(OWLOntologyManager m, OWLOntologyID ontID, Util ontUtil) {
+    	manager = m;
+    	ontology = m.getOntology(ontID);
+    	u = ontUtil;
         frame =  new JFrame();
         // rankLevels = new HashMap<>();
         rankAxioms = new TreeMap<>();
-        axioms = inAxioms;
+        axioms = u.getDefeasibleAxioms();
+        
+        // System.out.println(u.getAllAxioms());
         // incAction = new ActionListener() {
         // 	public void actionPerformed(ActionEvent e) {
 
@@ -126,20 +132,42 @@ public class DefeasibleRanker {
 				        int level = u.getRank(axiom);
 				        
 				        int upLevel = level + 1;
-				        OWLSubClassOfAxiom newAx = u.assignRank(axiom, upLevel);
+				        // OWLSubClassOfAxiom newAx = u.assignRank(axiom, upLevel);
+				        u.assignRank(axiom, upLevel);
 						rankAxioms.get(level).remove(axiom);
 
-						System.out.println(u.getRank(newAx));
+						// System.out.println(u.getRank(newAx));
 
-						manager.removeAxiom(ontology, axiom);
-						manager.addAxiom(ontology, newAx);
+						// manager.removeAxiom(ontology, axiom);
+						// manager.addAxiom(ontology, newAx);
+
+						// getOWLModelManager().getOWLOntologyManager().addAxiom(getOWLModelManager().getActiveOntology(), toAdd);
+				  //       getOWLModelManager().getOWLOntologyManager().removeAxiom(getOWLModelManager().getActiveOntology(), axiom);
+				  //       try {
+						// 	getOWLModelManager().getOWLOntologyManager().saveOntology(getOWLModelManager().getActiveOntology());
+						// } catch (OWLOntologyStorageException e) {
+						// 	// TODO Auto-generated catch block
+						// 	System.out.println("cannot save");
+						// 	e.printStackTrace();
+						// }
+
+						try 
+				        {
+				            manager.saveOntology(ontology);
+				        } 
+				        catch(OWLOntologyStorageException error)
+				        {
+				             System.out.println(error);
+				        };
+
+
 
 						Set<OWLSubClassOfAxiom> newRank = rankAxioms.get(upLevel);
 			 			if (newRank == null){
 			 				newRank = new HashSet<OWLSubClassOfAxiom>();
 			 				rankAxioms.put(upLevel, newRank);
 			 			}
-			 			newRank.add(newAx);
+			 			newRank.add(axiom);
 
 
 						// rankAxioms.get(upLevel).add(axiom);
@@ -153,9 +181,10 @@ public class DefeasibleRanker {
 			    	public void actionPerformed(ActionEvent e) {
 				        int level = u.getRank(axiom);
 				        int downLevel = level - 1;
-				        OWLSubClassOfAxiom newAx = u.assignRank(axiom, downLevel);
-				        manager.removeAxiom(ontology, axiom);
-						manager.addAxiom(ontology, newAx);
+				        // OWLSubClassOfAxiom newAx = u.assignRank(axiom, downLevel);
+				        u.assignRank(axiom, downLevel);
+				  //       manager.removeAxiom(ontology, axiom);
+						// manager.addAxiom(ontology, newAx);
 						rankAxioms.get(level).remove(axiom);
 						rankAxioms.get(downLevel).add(axiom);
 						mainPanel.removeAll();

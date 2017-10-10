@@ -14,6 +14,8 @@ import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLAnnotationValue;
 import org.semanticweb.owlapi.model.OWLObject;
 import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLLogicalAxiom;
+import org.semanticweb.owlapi.model.OWLLogicalAxiomVisitor;
 import org.semanticweb.owlapi.model.OWLClassAxiom;
 import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
@@ -42,10 +44,13 @@ import static org.semanticweb.owlapi.model.AxiomType.*;
 import org.semanticweb.owlapi.model.OWLSubClassOfAxiomShortCut;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
+import org.semanticweb.owlapi.model.OWLOntologyStorageException;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
+import org.semanticweb.owlapi.search.EntitySearcher;
 import java.io.File;
 import java.util.*;
 import java.util.ArrayList;
+import java.lang.reflect.Array;
 import java.util.HashSet;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -68,50 +73,94 @@ import org.semanticweb.owlapi.manchestersyntax.renderer.ManchesterOWLSyntaxPrefi
 import javax.swing.JOptionPane;
 import javax.swing.JFrame;
 import org.obolibrary.macro.ManchesterSyntaxTool;
-
+import org.semanticweb.owlapi.model.OWLOntologyID;
 
 public class Util {
-	private static final OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
-	private static final OWLDataFactory df = manager.getOWLDataFactory();
-	private static final IRI defeasibleIRI = IRI.create("defeasible");
-	private static final IRI rankIRI = IRI.create("rank");
-	public static final OWLAnnotationProperty defeasibleAnnotationProperty = df.getOWLAnnotationProperty(defeasibleIRI);
-	public static final OWLAnnotationProperty rankAnnotationProperty = df.getOWLAnnotationProperty(rankIRI);
-	public static final OWLAnnotationValue defeasibleAnnotationValue = df.getOWLLiteral(true);
-	public static final OWLAnnotationValue strictAnnotationValue = df.getOWLLiteral(false);
-	public static final OWLAnnotation defeasibleAnnotation = df.getOWLAnnotation(defeasibleAnnotationProperty, defeasibleAnnotationValue);
-	public static final OWLAnnotation strictAnnotation = df.getOWLAnnotation(defeasibleAnnotationProperty, strictAnnotationValue);
-	public static final OWLAnnotation defaultRankAnnotation = df.getOWLAnnotation(rankAnnotationProperty, df.getOWLLiteral(0));
-	public static final OWLAnnotation[] ANNOTATIONS = new OWLAnnotation[] { defeasibleAnnotation, defaultRankAnnotation };
-	public static final Set<OWLAnnotation> DEFAULTANNOTATIONS = new HashSet<>(Arrays.asList(ANNOTATIONS));
+	private static OWLOntologyManager manager;
+	private static OWLDataFactory df;
+	private static final IRI defeasibleIRI = IRI.create("http://cair.cs.uct.ac.za/defeasible");
+	private static final IRI rankIRI = IRI.create("http://cair.cs.uct.ac.za/rank");
+	public static OWLAnnotationProperty defeasibleAnnotationProperty;
+	public static OWLAnnotationProperty rankAnnotationProperty;
+	public static OWLAnnotationValue defeasibleAnnotationValue;
+	public static OWLAnnotationValue strictAnnotationValue;
+	public static OWLAnnotation defeasibleAnnotation;
+	public static OWLAnnotation strictAnnotation;
+	public static OWLAnnotation defaultRankAnnotation;
+	public static OWLAnnotation[] ANNOTATIONS;
+	public static Set<OWLAnnotation> DEFAULTANNOTATIONS;
+	public OWLOntologyID ontID;
 
 	private JFrame frame;
 	private OWLOntology ontology;
 
-	public Util(OWLOntology ontology){
-		this.ontology = ontology;
+	public Util(OWLOntologyID oID, OWLOntologyManager m){
+		manager = m;
+		ontID = oID;
+		ontology = m.getOntology(oID);
+		df = manager.getOWLDataFactory();
+
+		defeasibleAnnotationProperty = df.getOWLAnnotationProperty(defeasibleIRI);
+		rankAnnotationProperty = df.getOWLAnnotationProperty(rankIRI);
+		defeasibleAnnotationValue = df.getOWLLiteral(true);
+		strictAnnotationValue = df.getOWLLiteral(false);
+		defeasibleAnnotation = df.getOWLAnnotation(defeasibleAnnotationProperty, defeasibleAnnotationValue);
+		strictAnnotation = df.getOWLAnnotation(defeasibleAnnotationProperty, strictAnnotationValue);
+		defaultRankAnnotation = df.getOWLAnnotation(rankAnnotationProperty, df.getOWLLiteral(0));
+		ANNOTATIONS = new OWLAnnotation[] { defeasibleAnnotation, defaultRankAnnotation };
+		DEFAULTANNOTATIONS = new HashSet<>(Arrays.asList(ANNOTATIONS));
 	}
 
-	public void makeDefeasible(OWLSubClassOfAxiom axiom){
+	public void makeDefeasible(OWLAxiom axiom){
 		manager.removeAxiom(ontology, axiom);
-		manager.addAxiom(ontology, axiom.getAnnotatedAxiom(DEFAULTANNOTATIONS));
+		OWLAxiom outax = axiom.getAnnotatedAxiom(DEFAULTANNOTATIONS);
+		manager.addAxiom(ontology, outax);
+		System.out.println(ontID.getOntologyIRI().get());
+		System.out.println(outax.getAnnotations());
 		// return axiom.getAnnotatedAxiom(DEFAULTANNOTATIONS);
+		try 
+        {
+            manager.saveOntology(ontology);
+        } 
+        catch(OWLOntologyStorageException error)
+        {
+             System.out.println(error);
+        };
 	}
 
-	public void makeStrict(OWLSubClassOfAxiom axiom){
+	public void makeStrict(OWLAxiom axiom){
 		Set<OWLAnnotation> strictAnnotations = new HashSet<>();
 		strictAnnotations.add(strictAnnotation);
 		manager.removeAxiom(ontology, axiom);
-		OWLSubClassOfAxiom outax = axiom.getAxiomWithoutAnnotations();
+		OWLAxiom outax = axiom.getAxiomWithoutAnnotations();
 		manager.addAxiom(ontology, outax.getAnnotatedAxiom(strictAnnotations));
+		try 
+        {
+            manager.saveOntology(ontology);
+        } 
+        catch(OWLOntologyStorageException error)
+        {
+             System.out.println(error);
+        };
 	}
 
-	public OWLSubClassOfAxiom assignRank(OWLSubClassOfAxiom axiom, int rankInt){
+	public void assignRank(OWLAxiom axiom, int rankInt){
 		Set<OWLAnnotation> rankAnnotation = new HashSet<>();
 		rankAnnotation.add(defeasibleAnnotation);
 		rankAnnotation.add(df.getOWLAnnotation(rankAnnotationProperty, df.getOWLLiteral(rankInt)));
-		OWLSubClassOfAxiom outax = axiom.getAxiomWithoutAnnotations();
-		return outax.getAnnotatedAxiom(rankAnnotation);
+		OWLAxiom outax = axiom.getAxiomWithoutAnnotations();
+		System.out.println(outax);
+		manager.removeAxiom(ontology, axiom);
+		manager.addAxiom(ontology, outax.getAnnotatedAxiom(rankAnnotation));
+		try 
+        {
+            manager.saveOntology(ontology);
+        } 
+        catch(OWLOntologyStorageException error)
+        {
+             System.out.println(error);
+        };
+		// return outax.getAnnotatedAxiom(rankAnnotation);
 		// manager.removeAxiom(ontology, axiom);
 		// manager.addAxiom(ontology, axiom.getAnnotatedAxiom(rankAnnotation));
 	}
@@ -134,6 +183,14 @@ public class Util {
 		OWLObjectProperty opToAdd =  df.getOWLObjectProperty(IRI.create(input));
 		OWLDeclarationAxiom daxiomop = df.getOWLDeclarationAxiom(opToAdd);
 		manager.addAxiom(ontology, daxiomop);
+		try 
+        {
+            manager.saveOntology(ontology);
+        } 
+        catch(OWLOntologyStorageException error)
+        {
+             System.out.println(error);
+        };
 	}
 
 	public void newClass(){
@@ -141,34 +198,53 @@ public class Util {
 		String input = "#" + (String)JOptionPane.showInputDialog(frame, "Enter a new class name: ", "PRO", JOptionPane.PLAIN_MESSAGE);
 		OWLClass classToAdd = df.getOWLClass(IRI.create(input));
 		manager.addAxiom(ontology, df.getOWLDeclarationAxiom(classToAdd));
+		try 
+        {
+            manager.saveOntology(ontology);
+        } 
+        catch(OWLOntologyStorageException error)
+        {
+             System.out.println(error);
+        };
 	}
 
 	public Set<OWLSubClassOfAxiom> getAllAxioms(){
+		// AxiomType.SUBCLASS_OF, 
 		return ontology.getAxioms(AxiomType.SUBCLASS_OF, Imports.INCLUDED);
 	}
 
-	public Set<OWLSubClassOfAxiom> getDefeasibleAxioms(Set<OWLSubClassOfAxiom> inAxioms){
-		Set<OWLSubClassOfAxiom> outAxioms = new HashSet<OWLSubClassOfAxiom>();
-		for (OWLSubClassOfAxiom axiom : inAxioms){
+	public Set<OWLSubClassOfAxiom> getDefeasibleAxioms(){
+		Set<OWLAxiom> inAxioms = ontology.getAxioms();
+		Set<OWLSubClassOfAxiom> outAxioms =  new HashSet<>();
+		for (OWLAxiom axiom : inAxioms){
       		if (isDefeasible(axiom)){
-      			outAxioms.add(axiom);
+      			outAxioms.add((OWLSubClassOfAxiom) axiom);
       		}
       	}
       	return outAxioms;
 	}
 
-	public boolean isDefeasible(OWLSubClassOfAxiom axiom){
-  		for (OWLAnnotation annotation : axiom.getAnnotations(defeasibleAnnotationProperty)){
-  			OWLLiteral defeasibleLiteral = (OWLLiteral) annotation.getValue();
-  			if (defeasibleLiteral.parseBoolean()){
-  				System.out.println(defeasibleLiteral.parseBoolean());
-  				return true;
-  			}
+	public boolean isDefeasible(OWLAxiom axiom){
+  		// System.out.println(axiom.isAnnotated());
+  		Stream<OWLAnnotation> defAnnos = axiom.annotations(defeasibleAnnotationProperty);
+  		Object[] arrAnnos = defAnnos.toArray();
+  		if (Array.getLength(arrAnnos) == 0){
+  			return false;
   		}
-      	return false;
+  		// for (OWLAnnotation annotation : axiom.getAnnotations(defeasibleAnnotationProperty)){
+  		// 	System.out.println("got here");
+  		// 	OWLLiteral defeasibleLiteral = (OWLLiteral) annotation.getValue();
+  		// 	if (defeasibleLiteral.parseBoolean()){
+  		// 		System.out.println(defeasibleLiteral.parseBoolean());
+  		// 		return true;
+  		// 	}
+  		// }
+      	else {
+      		return true;
+      	}
 	}
 
-	public int getRank(OWLSubClassOfAxiom axiom){
+	public int getRank(OWLAxiom axiom){
 		OWLLiteral rankLiteral = null;
 		for (OWLAnnotation annotation : axiom.getAnnotations(rankAnnotationProperty)){
 			rankLiteral = (OWLLiteral) annotation.getValue();
@@ -181,10 +257,10 @@ public class Util {
 	}
 
 	public TreeMap<Integer, OWLClassExpression> getInternalisations(){
-		Set<OWLSubClassOfAxiom> inAxioms = getDefeasibleAxioms(getAllAxioms());
+		Set<OWLSubClassOfAxiom> inAxioms = getDefeasibleAxioms();
  		TreeMap<Integer, Set<OWLClassExpression>> rankAxioms = new TreeMap<>();
 
- 		for (OWLSubClassOfAxiom axiom : inAxioms){
+ 		for (OWLAxiom axiom : inAxioms){
  			int rank = getRank(axiom);
  			Set<OWLClassExpression> newRank = rankAxioms.get(rank);
  			if (newRank == null){
@@ -255,8 +331,9 @@ public class Util {
 		StringWriter sw = new StringWriter();
 		ManchesterOWLSyntaxPrefixNameShortFormProvider ssfp = new ManchesterOWLSyntaxPrefixNameShortFormProvider(ontology);
 		ManchesterOWLSyntaxObjectRenderer renderer = new ManchesterOWLSyntaxObjectRenderer(sw, ssfp);
+		// OWLLogicalAxiomVisitor renderer = new OWLLogicalAxiomVisitor(sw, ssfp);
 
-		for (OWLSubClassOfAxiom axiom : getDefeasibleAxioms(getAllAxioms())){
+		for (OWLSubClassOfAxiom axiom : getDefeasibleAxioms()){
 			renderer.visit(axiom);
 		}
 

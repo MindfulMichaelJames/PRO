@@ -7,19 +7,25 @@ import java.io.StringWriter;
 import java.util.Set;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
+import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.manchestersyntax.renderer.ManchesterOWLSyntaxObjectRenderer;
 import org.semanticweb.owlapi.manchestersyntax.renderer.ManchesterOWLSyntaxPrefixNameShortFormProvider;
+import org.semanticweb.owlapi.model.OWLOntologyID;
+import org.semanticweb.owlapi.model.AxiomType;
+import static org.semanticweb.owlapi.model.AxiomType.*;
 
 public class DefeasibleMaker {
-    private static OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
-    public DefeasibleMaker(OWLOntology ontology, Set<OWLSubClassOfAxiom> axioms) {
-        Util u = new Util(ontology);
+    // private static OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+    public DefeasibleMaker(OWLOntologyManager manager, OWLOntologyID ontID, Util ontUtil) {
+        OWLOntology ontology = manager.getOntology(ontID);
+        Util u = ontUtil;
         JFrame frame =  new JFrame();
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
         JButton bCancel;
+        Set<OWLSubClassOfAxiom> axioms = ontology.getAxioms(AxiomType.SUBCLASS_OF);
 
         for (OWLSubClassOfAxiom axiom : axioms) {
 

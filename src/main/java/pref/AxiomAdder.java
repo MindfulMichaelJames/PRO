@@ -36,7 +36,7 @@ public class AxiomAdder implements ActionListener{
 
         f = new JFrame();
         f.getContentPane().setLayout(new BoxLayout(f.getContentPane(), BoxLayout.Y_AXIS));
-        f.setSize(400,100);
+        f.setSize(600,100);
 
         tfLHS = new JTextField();  
  

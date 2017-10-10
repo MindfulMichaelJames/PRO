@@ -42,6 +42,7 @@ import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
 import org.semanticweb.owlapi.model.OWLOntologyStorageException;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
+import org.semanticweb.owlapi.model.OWLOntologyID;
 import java.io.File;
 import java.util.*;
 import java.util.ArrayList;
@@ -64,8 +65,8 @@ public class PRO {
 	private static JFrame frame;
 	private static OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 	private static OWLDataFactory df = manager.getOWLDataFactory();
-	private static OWLAnnotationProperty userRank = df.getOWLAnnotationProperty(IRI.create("#userRank"));
 	OWLOntology ontology;
+	OWLOntologyID ontID;
 	Util u;
 
 	public static void main(String[] args) throws Exception {
@@ -107,19 +108,22 @@ public class PRO {
 	public void runTool(){
 		try 
             {
-                ontology = manager.loadOntologyFromOntologyDocument(new File("Test2.owl"));
+                ontology = manager.loadOntologyFromOntologyDocument(new File("Student.owl"));
             } 
             catch(OWLOntologyCreationException error)
             {
                  System.out.println(error);
             }
-        System.out.println(manager.getOntologyFormat(ontology));
-		u = new Util(ontology);
+        
+        ontID = ontology.getOntologyID();
+        
+		u = new Util(ontID, manager);
+
 		functionMenu();
 	}
 
 	public void functionMenu(){
-		
+		// u = new Util(ontology);
 
 		// ontology = ontLoader.getOnt();
 
@@ -143,74 +147,65 @@ public class PRO {
         classButton.addActionListener(new ActionListener() {
 	    	public void actionPerformed(ActionEvent e) {
 		        u.newClass();
-		        try 
-		        {
-		            manager.saveOntology(ontology);
-		        } 
-		        catch(OWLOntologyStorageException error)
-		        {
-		             System.out.println(error);
-		        };
 		    }
 		});
 		opButton.addActionListener(new ActionListener() {
 	    	public void actionPerformed(ActionEvent e) {
 		        u.newObjectProperty();
-		        try 
-		        {
-		            manager.saveOntology(ontology);
-		        } 
-		        catch(OWLOntologyStorageException error)
-		        {
-		             System.out.println(error);
-		        };
+		        // try 
+		        // {
+		        //     manager.saveOntology(ontology);
+		        // } 
+		        // catch(OWLOntologyStorageException error)
+		        // {
+		        //      System.out.println(error);
+		        // };
 		    }
 		});
 		newAxiom.addActionListener(new ActionListener() {
 	    	public void actionPerformed(ActionEvent e) {
 		        AxiomAdder axAd = new AxiomAdder(ontology);
-		        try 
-		        {
-		            manager.saveOntology(ontology);
-		        } 
-		        catch(OWLOntologyStorageException error)
-		        {
-		             System.out.println(error);
-		        };
+		        // try 
+		        // {
+		        //     manager.saveOntology(ontology);
+		        // } 
+		        // catch(OWLOntologyStorageException error)
+		        // {
+		        //      System.out.println(error);
+		        // };
 		    }
 		});
 		denoteDefeasible.addActionListener(new ActionListener() {
 	    	public void actionPerformed(ActionEvent e) {
-		        u = new Util(ontology);
-		        DefeasibleMaker dM = new DefeasibleMaker(ontology, u.getAllAxioms());
+		        DefeasibleMaker dM = new DefeasibleMaker(manager, ontID, u);
 		        // System.out.println(ontology);
-		        try 
-		        {
-		            manager.saveOntology(ontology);
-		        } 
-		        catch(OWLOntologyStorageException error)
-		        {
-		             System.out.println(error);
-		        };
+		        // try 
+		        // {
+		        //     manager.saveOntology(ontology);
+		        // } 
+		        // catch(OWLOntologyStorageException error)
+		        // {
+		        //      System.out.println(error);
+		        // };
 		    }
 		});
 		editRanking.addActionListener(new ActionListener() {
 	    	public void actionPerformed(ActionEvent e) {
-		        DefeasibleRanker dR = new DefeasibleRanker(ontology, u.getDefeasibleAxioms(u.getAllAxioms()));
+		        DefeasibleRanker dR = new DefeasibleRanker(manager, ontID, u);
 		        // System.out.println(ontology);
-		    	try 
-		        {
-		            manager.saveOntology(ontology);
-		        } 
-		        catch(OWLOntologyStorageException error)
-		        {
-		             System.out.println(error);
-		        };
+		    	// try 
+		     //    {
+		     //        manager.saveOntology(ontology);
+		     //    } 
+		     //    catch(OWLOntologyStorageException error)
+		     //    {
+		     //         System.out.println(error);
+		     //    };
 		    }
 		});
 		queryButton.addActionListener(new ActionListener() {
 	    	public void actionPerformed(ActionEvent e) {
-		        QueryGetter qG = new QueryGetter(ontology);
+		        QueryGetter qG = new QueryGetter(ontology, u);
 		    	// try 
 		     //    {
 		     //        manager.saveOntology(ontology);

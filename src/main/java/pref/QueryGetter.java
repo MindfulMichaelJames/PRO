@@ -7,6 +7,7 @@ import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.obolibrary.macro.ManchesterSyntaxTool;
+import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 
 
 public class QueryGetter implements ActionListener{
@@ -86,9 +87,11 @@ public class QueryGetter implements ActionListener{
         String lhs=tfLHS.getText();  
         String rhs=tfRHS.getText();
 
+        OWLSubClassOfAxiom inputQuery = df.getOWLSubClassOfAxiom(parser.parseManchesterExpression(lhs), parser.parseManchesterExpression(rhs));
         // String newAx = lhs + " SubClassOf " + rhs;
+        System.out.println(inputQuery);
         if(e.getSource()==bAdd){  
-            Boolean entailed = u.performRationalClosure(df.getOWLSubClassOfAxiom(parser.parseManchesterExpression(lhs), parser.parseManchesterExpression(rhs)));
+            Boolean entailed = u.performRationalClosure(inputQuery);
             if (entailed){
                 System.out.println("In rational closure");
                 JOptionPane.showMessageDialog(null, "In rational closure", "Result", JOptionPane.INFORMATION_MESSAGE);
@@ -102,10 +105,10 @@ public class QueryGetter implements ActionListener{
         }  
     } 
 
-    public QueryGetter(OWLOntology ontology){
+    public QueryGetter(OWLOntology ontology, Util ontUtil){
         parser = new ManchesterSyntaxTool(ontology);
         o = ontology;
-        u = new Util(o);
+        u = ontUtil;
         prepGUI();
         showAdder();
     }
