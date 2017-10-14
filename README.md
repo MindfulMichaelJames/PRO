@@ -5,7 +5,7 @@ A preferential reasoner and ontology editor for defeasible OWL ontologies.
 #### Author
 
 Michael Harrison
-:	for completion of a Computer Science Honours course at the University of Cape Town.
+*for completion of a Computer Science Honours course at the University of Cape Town.*
 
 
 #### Building the tab plugin from source
