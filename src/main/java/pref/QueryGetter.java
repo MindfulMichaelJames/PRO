@@ -3,13 +3,13 @@ import javax.swing.*;
 import java.awt.event.*;
 import java.awt.*;
 import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.model.OWLDataFactory;
-import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.semanticweb.owlapi.model.*;
 import org.obolibrary.macro.ManchesterSyntaxTool;
-import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 
-
+/* 
+* This class allows users to query the ontology
+* Returns whether the axiom is in the rational closure or not
+*/
 public class QueryGetter implements ActionListener{
     Util u;  
     JTextField tfLHS, tfRHS;  
@@ -28,32 +28,20 @@ public class QueryGetter implements ActionListener{
         gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.ipadx = 5;
-
         panelB = new JPanel();
         panelC = new JPanel();
-
         panelC.setLayout(new GridBagLayout());
-
         panelB.setLayout(new BoxLayout(panelB, BoxLayout.X_AXIS));
-
         f = new JFrame();
         f.getContentPane().setLayout(new BoxLayout(f.getContentPane(), BoxLayout.Y_AXIS));
         f.setSize(400,100);
-
         tfLHS = new JTextField();  
- 
         tfRHS = new JTextField();  
-
         lLHS = new JLabel("Class Expression");  
-
         lSCO = new JLabel("SubClassOf");  
-
         lRHS = new JLabel("Class Expression");  
-    
         bAdd = new JButton("Query");  
-  
         bCancel = new JButton("Cancel");  
-
         bAdd.addActionListener(this);  
         bCancel.addActionListener(this);
 
@@ -79,17 +67,14 @@ public class QueryGetter implements ActionListener{
 
         panelB.add(bCancel);
         panelB.add(bAdd);
-
         f.add(panelC);
         f.add(panelB);
     }         
+
     public void actionPerformed(ActionEvent e) {  
         String lhs=tfLHS.getText();  
         String rhs=tfRHS.getText();
-
         OWLSubClassOfAxiom inputQuery = df.getOWLSubClassOfAxiom(parser.parseManchesterExpression(lhs), parser.parseManchesterExpression(rhs));
-        // String newAx = lhs + " SubClassOf " + rhs;
-        System.out.println(inputQuery);
         if(e.getSource()==bAdd){  
             Boolean entailed = u.performRationalClosure(inputQuery);
             if (entailed){

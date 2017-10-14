@@ -6,18 +6,15 @@ import java.awt.*;
 import java.io.StringWriter;
 import java.util.Set;
 import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
-import org.semanticweb.owlapi.model.OWLAxiom;
-import org.semanticweb.owlapi.model.OWLOntologyManager;
-import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.manchestersyntax.renderer.ManchesterOWLSyntaxObjectRenderer;
 import org.semanticweb.owlapi.manchestersyntax.renderer.ManchesterOWLSyntaxPrefixNameShortFormProvider;
-import org.semanticweb.owlapi.model.OWLOntologyID;
-import org.semanticweb.owlapi.model.AxiomType;
 import static org.semanticweb.owlapi.model.AxiomType.*;
 
+/* 
+* This class allows users specify whether axioms are strict or defeasible
+*/
 public class DefeasibleMaker {
-    // private static OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
     public DefeasibleMaker(OWLOntologyManager manager, OWLOntologyID ontID, Util ontUtil) {
         OWLOntology ontology = manager.getOntology(ontID);
         Util u = ontUtil;
@@ -28,17 +25,13 @@ public class DefeasibleMaker {
         Set<OWLSubClassOfAxiom> axioms = ontology.getAxioms(AxiomType.SUBCLASS_OF);
 
         for (OWLSubClassOfAxiom axiom : axioms) {
-
             StringWriter sw = new StringWriter();
             ManchesterOWLSyntaxPrefixNameShortFormProvider ssfp = new ManchesterOWLSyntaxPrefixNameShortFormProvider(ontology);
             ManchesterOWLSyntaxObjectRenderer renderer = new ManchesterOWLSyntaxObjectRenderer(sw, ssfp);
             renderer.visit(axiom);
-
             JPanel rowItem = new JPanel();
             rowItem.setLayout(new BoxLayout(rowItem, BoxLayout.X_AXIS));
-
             JLabel axiomLabel = new JLabel(sw.toString());
-            
             JRadioButton strict = new JRadioButton("Strict");
             JRadioButton defeasible = new JRadioButton("Defeasible");
             ButtonGroup group = new ButtonGroup();
@@ -67,12 +60,10 @@ public class DefeasibleMaker {
             rowItem.add(axiomLabel);
             rowItem.add(strict);
             rowItem.add(defeasible);
-
             mainPanel.add(rowItem);
             mainPanel.revalidate();
         }
         JButton doneButton = new JButton("Done");
-
         mainPanel.add(doneButton);
 
         doneButton.addActionListener(new ActionListener() {
@@ -80,8 +71,6 @@ public class DefeasibleMaker {
                 frame.dispose();
             }
         });
-
-
         frame.add(mainPanel);
         frame.pack();
         frame.setVisible(true);

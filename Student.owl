@@ -10,7 +10,131 @@
      xmlns:cair1="http://cair.cs.uct.ac.za/"
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
     <owl:Ontology rdf:about="http://www.semanticweb.org/michaejamesharrisonl/ontologies/2017/7/untitled-ontology-214"/>
+    
 
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Annotation properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- http://cair.cs.uct.ac.za/defeasible -->
+
+
+    <owl:AnnotationProperty rdf:about="http://cair.cs.uct.ac.za/defeasible"/>
+    
+
+
+    <!-- http://cair.cs.uct.ac.za/rank -->
+
+
+    <owl:AnnotationProperty rdf:about="http://cair.cs.uct.ac.za/rank"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- #receives -->
+
+
+    <owl:ObjectProperty rdf:about="#receives"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- #EmployedStudent -->
+
+
+    <owl:Class rdf:about="#EmployedStudent">
+        <rdfs:subClassOf rdf:resource="#Student"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#receives"/>
+                <owl:someValuesFrom rdf:resource="#TaxInvoice"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    <owl:Axiom>
+        <owl:annotatedSource rdf:resource="#EmployedStudent"/>
+        <owl:annotatedProperty rdf:resource="http://www.w3.org/2000/01/rdf-schema#subClassOf"/>
+        <owl:annotatedTarget>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#receives"/>
+                <owl:someValuesFrom rdf:resource="#TaxInvoice"/>
+            </owl:Restriction>
+        </owl:annotatedTarget>
+        <cair1:defeasible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</cair1:defeasible>
+        <cair1:rank rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</cair1:rank>
+    </owl:Axiom>
+    
+
+
+    <!-- #Student -->
+
+
+    <owl:Class rdf:about="#Student">
+        <rdfs:subClassOf>
+            <owl:Class>
+                <owl:complementOf>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="#receives"/>
+                        <owl:someValuesFrom rdf:resource="#TaxInvoice"/>
+                    </owl:Restriction>
+                </owl:complementOf>
+            </owl:Class>
+        </rdfs:subClassOf>
+    </owl:Class>
+    <owl:Axiom>
+        <owl:annotatedSource rdf:resource="#Student"/>
+        <owl:annotatedProperty rdf:resource="http://www.w3.org/2000/01/rdf-schema#subClassOf"/>
+        <owl:annotatedTarget>
+            <owl:Class>
+                <owl:complementOf>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="#receives"/>
+                        <owl:someValuesFrom rdf:resource="#TaxInvoice"/>
+                    </owl:Restriction>
+                </owl:complementOf>
+            </owl:Class>
+        </owl:annotatedTarget>
+        <cair1:defeasible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</cair1:defeasible>
+        <cair1:rank rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</cair1:rank>
+    </owl:Axiom>
+    
+
+
+    <!-- #TaxInvoice -->
+
+
+    <owl:Class rdf:about="#TaxInvoice"/>
 </rdf:RDF>
 
 

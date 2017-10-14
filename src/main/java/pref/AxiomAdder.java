@@ -8,6 +8,9 @@ import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.obolibrary.macro.ManchesterSyntaxTool;
 
+/* 
+* This class allows users to add new axioms to the ontology
+*/
 
 public class AxiomAdder implements ActionListener{  
     JTextField tfLHS, tfRHS;  
@@ -22,6 +25,9 @@ public class AxiomAdder implements ActionListener{
     private static final OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
     private static final OWLDataFactory df = manager.getOWLDataFactory();
 
+    /* 
+    * This method creates the interface for users to add axioms to the ontology
+    */
     private void prepGUI(){
         gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -80,11 +86,14 @@ public class AxiomAdder implements ActionListener{
 
         f.add(panelC);
         f.add(panelB);
-    }         
+    }
+
+    /* 
+    * This button action takes the user-provided input, parses it, and adds it as an axiom to the ontology
+    */         
     public void actionPerformed(ActionEvent e) {  
         String lhs=tfLHS.getText();  
         String rhs=tfRHS.getText();
-        // String newAx = lhs + " SubClassOf " + rhs;
         if(e.getSource()==bAdd){  
             manager.addAxiom(o, df.getOWLSubClassOfAxiom(parser.parseManchesterExpression(lhs), parser.parseManchesterExpression(rhs))); 
         }else if(e.getSource()==bCancel){  
@@ -102,9 +111,4 @@ public class AxiomAdder implements ActionListener{
     private void showAdder(){
         f.setVisible(true);
     }
-
-    // public static void main(String[] args) {
-    //     AxiomAdder testAdd = new AxiomAdder();
-    //     testAdd.showAdder();s
-    // }
 } 

@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
 ##############################################################################
 ##
@@ -33,11 +33,11 @@ DEFAULT_JVM_OPTS=""
 # Use the maximum available, or set MAX_FD != -1 to use that value.
 MAX_FD="maximum"
 
-warn () {
+warn ( ) {
     echo "$*"
 }
 
-die () {
+die ( ) {
     echo
     echo "$*"
     echo
@@ -64,7 +64,7 @@ case "`uname`" in
     ;;
 esac
 
-CLASSPATH=$APP_HOME/lib/httpcore-nio-4.4.4.jar:$APP_HOME/lib/semargl-sesame-0.6.1.jar:$APP_HOME/lib/semargl-rdfa-0.6.1.jar:$APP_HOME/lib/sesame-rio-jsonld-4.0.2.jar:$APP_HOME/lib/slf4j-simple-1.7.25.jar:$APP_HOME/lib/sesame-rio-nquads-4.0.2.jar:$APP_HOME/lib/httpcore-4.4.4.jar:$APP_HOME/lib/jcl-over-slf4j-1.7.13.jar:$APP_HOME/lib/httpclient-4.5.1.jar:$APP_HOME/lib/jackson-annotations-2.6.3.jar:$APP_HOME/lib/jackson-databind-2.6.3.jar:$APP_HOME/lib/caffeine-2.1.0.jar:$APP_HOME/lib/guava-19.0.jar:$APP_HOME/lib/semargl-rdf-0.6.1.jar:$APP_HOME/lib/automaton-1.11-8.jar:$APP_HOME/lib/httpclient-cache-4.5.1.jar:$APP_HOME/lib/xz-1.5.jar:$APP_HOME/lib/trove4j-3.0.3.jar:$APP_HOME/lib/owlapi-apibinding-5.0.0.jar:$APP_HOME/lib/jackson-core-2.6.3.jar:$APP_HOME/lib/commons-rdf-api-0.1.0-incubating.jar:$APP_HOME/lib/owlapi-compatibility-5.0.0.jar:$APP_HOME/lib/sesame-rio-binary-4.0.2.jar:$APP_HOME/lib/sesame-rio-rdfxml-4.0.2.jar:$APP_HOME/lib/slf4j-api-1.7.25.jar:$APP_HOME/lib/jsonld-java-0.8.0.jar:$APP_HOME/lib/axiom-impl-1.2.14.jar:$APP_HOME/lib/httpcore-osgi-4.4.4.jar:$APP_HOME/lib/fluent-hc-4.5.1.jar:$APP_HOME/lib/org.semanticweb.hermit-1.3.8.500.jar:$APP_HOME/lib/httpclient-osgi-4.5.1.jar:$APP_HOME/lib/jsr305-2.0.1.jar:$APP_HOME/lib/sesame-rio-turtle-4.0.2.jar:$APP_HOME/lib/jaxen-1.1.4.jar:$APP_HOME/lib/owlapi-api-5.0.0.jar:$APP_HOME/lib/owlapi-parsers-5.0.0.jar:$APP_HOME/lib/sesame-rio-datatypes-4.0.2.jar:$APP_HOME/lib/apache-mime4j-core-0.7.2.jar:$APP_HOME/lib/sesame-model-4.0.2.jar:$APP_HOME/lib/sesame-util-4.0.2.jar:$APP_HOME/lib/stax2-api-3.1.1.jar:$APP_HOME/lib/geronimo-stax-api_1.0_spec-1.0.1.jar:$APP_HOME/lib/commons-codec-1.9.jar:$APP_HOME/lib/owlapi-tools-5.0.0.jar:$APP_HOME/lib/guice-assistedinject-4.0.jar:$APP_HOME/lib/javax.inject-1.jar:$APP_HOME/lib/guice-4.0.jar:$APP_HOME/lib/commons-logging-1.1.3.jar:$APP_HOME/lib/sesame-rio-rdfjson-4.0.2.jar:$APP_HOME/lib/sesame-rio-ntriples-4.0.2.jar:$APP_HOME/lib/geronimo-activation_1.1_spec-1.1.jar:$APP_HOME/lib/geronimo-javamail_1.4_spec-1.7.1.jar:$APP_HOME/lib/axiom-api-1.2.14.jar:$APP_HOME/lib/semargl-core-0.6.1.jar:$APP_HOME/lib/guice-multibindings-4.0.jar:$APP_HOME/lib/owlapi-impl-5.0.0.jar:$APP_HOME/lib/httpmime-4.5.1.jar:$APP_HOME/lib/sesame-rio-languages-4.0.2.jar:$APP_HOME/lib/owlapi-distribution-5.0.0.jar:$APP_HOME/lib/sesame-rio-n3-4.0.2.jar:$APP_HOME/lib/aopalliance-1.0.jar:$APP_HOME/lib/owlapi-rio-5.0.0.jar:$APP_HOME/lib/sesame-rio-api-4.0.2.jar:$APP_HOME/lib/commons-io-2.4.jar:$APP_HOME/lib/sesame-rio-trix-4.0.2.jar:$APP_HOME/lib/axiom-dom-1.2.14.jar:$APP_HOME/lib/woodstox-core-asl-4.1.4.jar:$APP_HOME/lib/sesame-rio-trig-4.0.2.jar:$APP_HOME/lib/axiom-c14n-1.2.14.jar:$APP_HOME/lib/owlapi-oboformat-5.0.0.jar:$APP_HOME/lib/owlapi-fixers-5.0.0.jar:$APP_HOME/lib/pref-reasoner-0.1.0.jar
+CLASSPATH=$APP_HOME/lib/pref-reasoner-0.1.0.jar:$APP_HOME/lib/owlapi-distribution-5.0.0.jar:$APP_HOME/lib/org.semanticweb.hermit-1.3.8.500.jar:$APP_HOME/lib/slf4j-simple-1.7.25.jar:$APP_HOME/lib/junit-4.12.jar:$APP_HOME/lib/jackson-core-2.6.3.jar:$APP_HOME/lib/jackson-databind-2.6.3.jar:$APP_HOME/lib/jackson-annotations-2.6.3.jar:$APP_HOME/lib/owlapi-compatibility-5.0.0.jar:$APP_HOME/lib/commons-rdf-api-0.1.0-incubating.jar:$APP_HOME/lib/xz-1.5.jar:$APP_HOME/lib/sesame-model-4.0.2.jar:$APP_HOME/lib/sesame-rio-api-4.0.2.jar:$APP_HOME/lib/sesame-rio-languages-4.0.2.jar:$APP_HOME/lib/sesame-rio-datatypes-4.0.2.jar:$APP_HOME/lib/sesame-rio-binary-4.0.2.jar:$APP_HOME/lib/sesame-rio-n3-4.0.2.jar:$APP_HOME/lib/sesame-rio-nquads-4.0.2.jar:$APP_HOME/lib/sesame-rio-ntriples-4.0.2.jar:$APP_HOME/lib/sesame-rio-rdfjson-4.0.2.jar:$APP_HOME/lib/sesame-rio-rdfxml-4.0.2.jar:$APP_HOME/lib/sesame-rio-trix-4.0.2.jar:$APP_HOME/lib/sesame-rio-turtle-4.0.2.jar:$APP_HOME/lib/sesame-rio-trig-4.0.2.jar:$APP_HOME/lib/jsonld-java-0.8.0.jar:$APP_HOME/lib/semargl-sesame-0.6.1.jar:$APP_HOME/lib/trove4j-3.0.3.jar:$APP_HOME/lib/caffeine-2.1.0.jar:$APP_HOME/lib/guava-19.0.jar:$APP_HOME/lib/guice-4.0.jar:$APP_HOME/lib/guice-assistedinject-4.0.jar:$APP_HOME/lib/guice-multibindings-4.0.jar:$APP_HOME/lib/jsr305-2.0.1.jar:$APP_HOME/lib/commons-io-2.4.jar:$APP_HOME/lib/commons-logging-1.1.3.jar:$APP_HOME/lib/axiom-api-1.2.14.jar:$APP_HOME/lib/axiom-c14n-1.2.14.jar:$APP_HOME/lib/axiom-impl-1.2.14.jar:$APP_HOME/lib/axiom-dom-1.2.14.jar:$APP_HOME/lib/automaton-1.11-8.jar:$APP_HOME/lib/hamcrest-core-1.3.jar:$APP_HOME/lib/owlapi-apibinding-5.0.0.jar:$APP_HOME/lib/sesame-util-4.0.2.jar:$APP_HOME/lib/httpclient-osgi-4.5.1.jar:$APP_HOME/lib/httpcore-osgi-4.4.4.jar:$APP_HOME/lib/jcl-over-slf4j-1.7.13.jar:$APP_HOME/lib/semargl-core-0.6.1.jar:$APP_HOME/lib/semargl-rdfa-0.6.1.jar:$APP_HOME/lib/javax.inject-1.jar:$APP_HOME/lib/aopalliance-1.0.jar:$APP_HOME/lib/geronimo-activation_1.1_spec-1.1.jar:$APP_HOME/lib/geronimo-javamail_1.4_spec-1.7.1.jar:$APP_HOME/lib/jaxen-1.1.4.jar:$APP_HOME/lib/geronimo-stax-api_1.0_spec-1.0.1.jar:$APP_HOME/lib/apache-mime4j-core-0.7.2.jar:$APP_HOME/lib/woodstox-core-asl-4.1.4.jar:$APP_HOME/lib/owlapi-api-5.0.0.jar:$APP_HOME/lib/owlapi-impl-5.0.0.jar:$APP_HOME/lib/owlapi-parsers-5.0.0.jar:$APP_HOME/lib/owlapi-oboformat-5.0.0.jar:$APP_HOME/lib/owlapi-tools-5.0.0.jar:$APP_HOME/lib/owlapi-fixers-5.0.0.jar:$APP_HOME/lib/owlapi-rio-5.0.0.jar:$APP_HOME/lib/httpclient-4.5.1.jar:$APP_HOME/lib/commons-codec-1.9.jar:$APP_HOME/lib/httpmime-4.5.1.jar:$APP_HOME/lib/httpclient-cache-4.5.1.jar:$APP_HOME/lib/fluent-hc-4.5.1.jar:$APP_HOME/lib/httpcore-4.4.4.jar:$APP_HOME/lib/httpcore-nio-4.4.4.jar:$APP_HOME/lib/semargl-rdf-0.6.1.jar:$APP_HOME/lib/stax2-api-3.1.1.jar:$APP_HOME/lib/sesame-rio-jsonld-4.0.2.jar:$APP_HOME/lib/slf4j-api-1.7.25.jar
 
 # Determine the Java command to use to start the JVM.
 if [ -n "$JAVA_HOME" ] ; then
@@ -154,19 +154,11 @@ if $cygwin ; then
     esac
 fi
 
-# Escape application args
-save () {
-    for i do printf %s\\n "$i" | sed "s/'/'\\\\''/g;1s/^/'/;\$s/\$/' \\\\/" ; done
-    echo " "
+# Split up the JVM_OPTS And PROJ_BUILD_OPTS values into an array, following the shell quoting and substitution rules
+function splitJvmOpts() {
+    JVM_OPTS=("$@")
 }
-APP_ARGS=$(save "$@")
+eval splitJvmOpts $DEFAULT_JVM_OPTS $JAVA_OPTS $PROJ_BUILD_OPTS
 
-# Collect all arguments for the java command, following the shell quoting and substitution rules
-eval set -- $DEFAULT_JVM_OPTS $JAVA_OPTS $PROJ_BUILD_OPTS -classpath "\"$CLASSPATH\"" pref.New "$APP_ARGS"
 
-# by default we should be in the correct project dir, but when run from Finder on Mac, the cwd is wrong
-if [ "$(uname)" = "Darwin" ] && [ "$HOME" = "$PWD" ]; then
-  cd "$(dirname "$0")"
-fi
-
-exec "$JAVACMD" "$@"
+exec "$JAVACMD" "${JVM_OPTS[@]}" -classpath "$CLASSPATH" pref.PRO "$@"
